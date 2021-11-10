@@ -25,6 +25,8 @@ from stable_baselines3.common.vec_env import (DummyVecEnv,
                                               VecNormalize,
                                               VecTransposeImage)
 
+from stable_baselines3.common.torch_layers import DenseMlpExtractor
+
 # Register custom envs
 # import utils.import_envs  # noqa: F401 pytype: disable=import-error
 from torch import nn as nn  # noqa: F401
@@ -380,6 +382,10 @@ class ExperimentManager:
         if "callback" in hyperparams.keys():
             del hyperparams["callback"]
 
+        if "policy_kwargs" in hyperparams.keys() and "features_extractor_class" in hyperparams["policy_kwargs"]:
+            if hyperparams["policy_kwargs"]["features_extractor_class"] == "DenseMlpExtractor":
+                hyperparams["policy_kwargs"]["features_extractor_class"] = DenseMlpExtractor
+                
         return hyperparams, env_wrapper
 
     def _preprocess_action_noise(
