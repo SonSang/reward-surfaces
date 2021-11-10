@@ -385,7 +385,16 @@ class ExperimentManager:
         if "policy_kwargs" in hyperparams.keys() and "features_extractor_class" in hyperparams["policy_kwargs"]:
             if hyperparams["policy_kwargs"]["features_extractor_class"] == "DenseMlpExtractor":
                 hyperparams["policy_kwargs"]["features_extractor_class"] = DenseMlpExtractor
-                
+
+        if "net_arch" in hyperparams["policy_kwargs"]:
+            if hyperparams["policy_kwargs"]["net_arch"] == "small":
+                hyperparams["policy_kwargs"]["net_arch"] = [dict(pi=[128 for _ in range(2)], vf=[128 for _ in range(2)])]
+            elif hyperparams["policy_kwargs"]["net_arch"] == "large":
+                hyperparams["policy_kwargs"]["net_arch"] = [dict(pi=[128 for _ in range(16)], vf=[128 for _ in range(16)])]
+            else:
+                print("net_arch is only specified as small and large.")
+                exit()
+
         return hyperparams, env_wrapper
 
     def _preprocess_action_noise(
