@@ -387,13 +387,10 @@ class ExperimentManager:
                 hyperparams["policy_kwargs"]["features_extractor_class"] = DenseMlpExtractor
 
         if "net_arch" in hyperparams["policy_kwargs"]:
-            if hyperparams["policy_kwargs"]["net_arch"] == "small":
-                hyperparams["policy_kwargs"]["net_arch"] = [dict(pi=[128 for _ in range(2)], vf=[128 for _ in range(2)])]
-            elif hyperparams["policy_kwargs"]["net_arch"] == "large":
-                hyperparams["policy_kwargs"]["net_arch"] = [dict(pi=[128 for _ in range(16)], vf=[128 for _ in range(16)])]
-            else:
-                print("net_arch is only specified as small and large.")
-                exit()
+            net_arch = hyperparams["policy_kwargs"]["net_arch"]
+            assert net_arch > 0, "Network size must be larger than 0."
+            hyperparams["policy_kwargs"]["net_arch"] = \
+                [dict(pi=[128 for _ in range(net_arch)], vf=[128 for _ in range(net_arch)])]
 
         return hyperparams, env_wrapper
 

@@ -6,6 +6,7 @@ from pathlib import Path
 from reward_surfaces.utils.surface_utils import readz, filter_normalized_params, scale_dir
 from reward_surfaces.utils.path_utils import strip_lagging_slash
 from reward_surfaces.experiments import generate_plane_data
+from copy import deepcopy
 
 
 def find_unscaled_alts(agent, method):
@@ -50,6 +51,9 @@ def main():
     info_fname = "info.json"
     info = json.load(open((folder_argname / info_fname)))
 
+    if info['hyperparameters']['policy_kwargs'] is not None:
+        store_policy_kwargs = deepcopy(info['hyperparameters']['policy_kwargs'])
+
     device = "cpu"
     agent, steps = make_agent(info['agent_name'], info['env'], device, output_path, info['hyperparameters'])
     agent.load_weights(checkpoint_path)
@@ -80,6 +84,9 @@ def main():
         dir2_vec = [m*v for v in dir2_vec]
 
     info['directions'] = args.directions if args.copy_directions is None else "copy"
+
+    if info['hyperparameters']['policy_kwargs'] is not None:
+        info['hyperparameters']['policy_kwargs'] = store_policy_kwargs
 
     generate_plane_data(args.checkpoint_dir, args.output_path, dir1_vec, dir2_vec, args.magnitude, info,
                         grid_size=args.grid_size,
