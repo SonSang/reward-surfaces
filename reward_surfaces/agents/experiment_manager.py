@@ -392,6 +392,13 @@ class ExperimentManager:
             hyperparams["policy_kwargs"]["net_arch"] = \
                 [dict(pi=[128 for _ in range(net_arch)], vf=[128 for _ in range(net_arch)])]
 
+        if "shallow_net_arch" in hyperparams["policy_kwargs"]:
+            shallow_net_arch = hyperparams["policy_kwargs"]["shallow_net_arch"]
+            assert shallow_net_arch > 0, "Network size must be larger than 0."
+            hyperparams["policy_kwargs"]["net_arch"] = \
+                [dict(pi=[shallow_net_arch for _ in range(2)], vf=[shallow_net_arch for _ in range(2)])]
+            del hyperparams["policy_kwargs"]["shallow_net_arch"]
+
         return hyperparams, env_wrapper
 
     def _preprocess_action_noise(
